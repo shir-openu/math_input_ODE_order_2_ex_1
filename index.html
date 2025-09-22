@@ -106,8 +106,10 @@
 
           <label for="inputRaw">קלט Plain או LaTeX</label>
           <textarea id="inputRaw" rows="6"
-placeholder="דוגמה ב-LaTeX
-y = C_1 e^{x} + C_2 e^{2x}"></textarea>
+placeholder="דוגמה לכתיבה בLaTeX:
+y = C_1 \sin(x) + C_2 \cos(x)
+או במצב Plain:
+y = C_1*sin(x) + C_2*cos(x)"></textarea>
 
           <div class="controls">
             <span class="pill"><input type="checkbox" id="forceLatex"><label for="forceLatex" style="margin:0">כפיית מצב LaTeX</label></span>
@@ -182,7 +184,7 @@ const problems = [
       קבלו את השורשים ובנו בעזרתם את הפתרון הכללי.
     `,
     hint2Html: `
-      קבלו פירוק לגורמים: \\((r-1)(r-2)=0\\) ולכן \\(r_1=1,\\; r_2=2\\).<br/>
+      קבלו פירוק לגורמים: \\((r-1)(r-2)=0\\) ולכן \\(r_1=1,\\; r_2=2\\).
     `,
     solutionDisplayLatex: String.raw`y = C_1 e^{x} + C_2 e^{2x}`,
     solutionStepsHtml: `
@@ -194,7 +196,7 @@ const problems = [
       type: 'general_form',
       expectedTerms: ['exp(x)', 'exp(2*x)']
     },
-    exampleInput: String.raw`y = C_1*exp(x) + C_2*exp(2*x)`
+    exampleInput: String.raw`y = C_1*sin(x) + C_2*cos(x)`
   }
 ];
 
