@@ -183,11 +183,10 @@ const problems = [
     `,
     hint2Html: `
       קבלו פירוק לגורמים: \\((r-1)(r-2)=0\\) ולכן \\(r_1=1,\\; r_2=2\\).<br/>
-      הפתרון הכללי: \\(y(x)=C_1 e^{x}+C_2 e^{2x}\\).
     `,
     solutionDisplayLatex: String.raw`y = C_1 e^{x} + C_2 e^{2x}`,
     solutionStepsHtml: `
-      **המשוואה האופיינית**: \\(r^2 - 3r + 2 = 0\\).<br/>
+      המשוואה האופיינית: \\(r^2 - 3r + 2 = 0\\).<br/>
       שורשים: \\(r_1=1, r_2=2\\).<br/>
       פתרון כללי: \\(y(x) = C_1 e^{x} + C_2 e^{2x}\\).
     `,
@@ -307,28 +306,69 @@ function checkGeneralSolution(userRaw) {
         const user = normalizeToPlain(userRaw).toLowerCase().replace(/\s+/g, '');
         console.log('Checking normalized input:', user);
         
-        // For this specific problem, we need:
+        // For this specific problem, we need EXACTLY:
         // 1. A term with exp(x) and a constant
-        // 2. A term with exp(2*x) and a constant
-        // 3. Addition or subtraction between terms
+        // 2. A term with exp(2*x) and a constant  
+        // 3. NO other terms (especially no constant terms)
+        // 4. Addition or subtraction between the two terms
         
-        // Check for exp(x) term - very permissive patterns
-        const hasExpX = /c[_0-9]*\*?exp\(x\)|exp\(x\)\*?c[_0-9]*/.test(user);
-        console.log('Has exp(x) term:', hasExpX);
+        // Check for exp(x) term with coefficient
+        const expXMatch = user.match(/c[_0-9]*\*?exp\(x\)|exp\(x\)\*?c[_0-9]*/g);
+        console.log('exp(x) matches:', expXMatch);
         
-        // Check for exp(2*x) term - very permissive patterns  
-        const hasExp2X = /c[_0-9]*\*?exp\(2\*x\)|exp\(2\*x\)\*?c[_0-9]*/.test(user);
-        console.log('Has exp(2*x) term:', hasExp2X);
+        // Check for exp(2*x) term with coefficient  
+        const exp2XMatch = user.match(/c[_0-9]*\*?exp\(2\*x\)|exp\(2\*x\)\*?c[_0-9]*/g);
+        console.log('exp(2*x) matches:', exp2XMatch);
+        
+        // Check that we have exactly one of each
+        if (!expXMatch || expXMatch.length !== 1) {
+            console.log('Wrong number of exp(x) terms');
+            return false;
+        }
+        
+        if (!exp2XMatch || exp2XMatch.length !== 1) {
+            console.log('Wrong number of exp(2*x) terms');
+            return false;
+        }
         
         // Check for operation between terms
         const hasOperation = /[+\-]/.test(user);
         console.log('Has operation:', hasOperation);
         
+        if (!hasOperation) {
+            return false;
+        }
+        
+        // Check that there are no unwanted terms
+        // Remove the valid terms and see what's left
+        let residual = user;
+        
+        // Remove the exp(x) term
+        residual = residual.replace(/c[_0-9]*\*?exp\(x\)|exp\(x\)\*?c[_0-9]*/g, '');
+        
+        // Remove the exp(2*x) term
+        residual = residual.replace(/c[_0-9]*\*?exp\(2\*x\)|exp\(2\*x\)\*?c[_0-9]*/g, '');
+        
+        // Remove operators
+        residual = residual.replace(/[+\-]/g, '');
+        
+        console.log('Residual after removing valid terms:', residual);
+        
+        // If there's anything significant left, the answer is wrong
+        if (residual.length > 0) {
+            console.log('Found unwanted terms in residual');
+            return false;
+        }
+        
         // Check for at least 2 constants
         const constants = user.match(/c[_0-9]*/g) || [];
         console.log('Constants found:', constants);
         
-        const result = hasExpX && hasExp2X && hasOperation && constants.length >= 2;
+        if (constants.length < 2) {
+            return false;
+        }
+        
+        const result = true;
         console.log('Final result:', result);
         
         return result;
